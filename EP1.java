@@ -21,8 +21,8 @@ class MLP{
 	//j:número de elementos da camada escondida
 	//k:número de elementos da saída
 	MLP(int i,int j, int k){
-		pesos1 = new double[i][j];
-		pesos2 = new double[j][k];
+		pesos1 = new double[j][i];
+		pesos2 = new double[k][j];
 		entradas = new double[i];
 		camadaEscondida = new double[j];
 		saidas = new double[k];
@@ -50,17 +50,20 @@ class MLP{
 		return resposta+bias;
 	}
 
-	//---> Continuar daqui
 	//Inicializa pesos
-	
-	/*double[][] inicializaPesos(){
+	//matriz.length->numero de linhas
+	//matriz[0].length->numero de colunas
+	double[][] inicializaPesos(double[][] pesos){
 		Random r = new Random();
 		for(int i=0; i<pesos.length; i++){
-			pesos[i]=r.nextDouble();
+			for(int j=0; j<pesos[0].length; j++){
+				pesos[i][j]=r.nextDouble();
+			}
 		}
 		return pesos;
 	}
 
+	/*
 	void teste(double[][]entrada){
 
 		for(int j=0; j<entrada.length; j++){
@@ -73,30 +76,33 @@ class MLP{
 			int solucao=funcaoAtivacao(resposta);
 			System.out.println(solucao);
 		}
-	}
+	}*/
 
-
-	//Entrada possui resposta
-	double[] treinamento(double[][] conjuntoTreino){
+	
+	
+	/*
+	double[] treinamento(double[][] pesos1, double[][] pesos2){
 		
 		//Os pesos devem ser inicializados fora do método (passo 0)
 		
-		double inFuncaoAtivacao=0;		
-		int saida=0;
+		//double inFuncaoAtivacao=0;		
+		//int saida=0;
 
 		int epocas=0;
-		while(epocas<2){
-			//para cada linha 
-			for(int i=0; i<conjuntoTreino.length; i++){
+
+		while(epocas<2){//(passo 1)
+
+			//para cada linha de pesos1 (entre a entrada e a camada escondida)
+			for(int i=0; i<pesos1.length; i++){
 				
 				//Entrada:
 
-				double[] linha=conjuntoTreino[i];
+				double[] linha=pesos1[i];
 
-				//percorrer linha (exceto ultima coluna) e atribuindo entrada do perceptron
-				for(int j=0; j<linha.length-1;j++){
-					entradas[j]=linha[j];					
-				}
+				//percorre a linha (exceto ultima coluna) e atribuindo entrada do perceptron
+				//for(int j=0; j<linha.length;j++){
+				//	entradas[j]=linha[j];					
+				//}
 
 				//Calculo
 				for(int j=0; j<entradas.length;j++){
@@ -118,7 +124,8 @@ class MLP{
 		}
 		
 		return pesos;
-	}*/
+	}
+	*/
 }
 
 public class EP1{
