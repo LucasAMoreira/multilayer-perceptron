@@ -31,6 +31,9 @@ class MLP{
 		alfa=1;
 	}
 
+
+	//--->É necessário criar uma função de ativação para cada letra?<---
+
 	int funcaoAtivacao(double in){
 		if(in>=0){
 			return 1;		
@@ -80,52 +83,55 @@ class MLP{
 
 	
 	
-	/*
-	double[] treinamento(double[][] pesos1, double[][] pesos2){
+	//Algoritmo de treinamento.
+	//não retorna nada, apenas modifica pesos da estrutura.
+	void treinamento(double[][]dados){
 		
 		//Os pesos devem ser inicializados fora do método (passo 0)
-		
-		//double inFuncaoAtivacao=0;		
-		//int saida=0;
-
+				
+		int saida=0;
 		int epocas=0;
 
 		while(epocas<2){//(passo 1)
 
-			//para cada linha de pesos1 (entre a entrada e a camada escondida)
-			for(int i=0; i<pesos1.length; i++){
+			//para cada dado
+			for(int k=0; k<dados[0].length;k++){
+
+				//neuronios de entrada recebem os dados (passo 3)
+				entradas=dados[k];
+
+				//para cada linha de pesos1 (entre a entrada e a camada escondida)
+				for(int i=0; i<pesos1.length; i++){//(passo 4)
 				
-				//Entrada:
+					//Entrada:
+					double[] linha=pesos1[i];
 
-				double[] linha=pesos1[i];
-
-				//percorre a linha (exceto ultima coluna) e atribuindo entrada do perceptron
-				//for(int j=0; j<linha.length;j++){
-				//	entradas[j]=linha[j];					
-				//}
-
-				//Calculo
-				for(int j=0; j<entradas.length;j++){
-					inFuncaoAtivacao+=entradas[j]*pesos[j];					
-				}
-				inFuncaoAtivacao+=bias;
-			
-				saida=funcaoAtivacao(inFuncaoAtivacao);
-
-				if(saida!=linha[linha.length-1]){
-					for(int j=0; j<pesos.length; j++){
-						pesos[j]=pesos[j]+(alfa*linha[linha.length-1]*entradas[j]);
+					//Faz soma para cada neuronio da camada escondida
+					for(int j=0; j<linha.length;j++){
+						camadaEscondida[i]+=linha[j]*entradas[j];					
 					}
-					bias+=alfa*linha[linha.length-1];
+
+					//Aplica a função de ativação no neuronio atual da camada escondida
+					saida=funcaoAtivacao(camadaEscondida[i]);		
 				}
+				//para cada linha de pesos2 (entre a camada escondida e a saída)
+				for(int i=0; i<pesos2.length; i++){//(passo 5)
 				
+					//Entrada:
+					double[] linha=pesos2[i];
+
+					//Faz soma para cada neuronio da camada escondida
+					for(int j=0; j<linha.length;j++){
+						saidas[i]+=linha[j]*camadaEscondida[j];					
+					}
+
+					//Aplica a função de ativação no neuronio atual da camada escondida
+					saida=funcaoAtivacao(saidas[i]);
+				}
 			}
 			epocas++;
 		}
-		
-		return pesos;
 	}
-	*/
 }
 
 public class EP1{
