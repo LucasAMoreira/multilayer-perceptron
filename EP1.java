@@ -1,8 +1,8 @@
 import java.util.Random;
 
 //Criar constante para representar numero de epocas?
-//Inicializar bias1 e bias2?
 
+// MUDAR FUNÇÃO DE ATIVAÇÃO?
 
 class MLP{
 
@@ -34,12 +34,21 @@ class MLP{
 
 	//--->É necessário criar uma função de ativação para cada letra?<---
 
-	int funcaoAtivacao(double in){
+	/*double funcaoAtivacao(double in){
 		if(in>=0){
 			return 1;		
 		}
 		else
 			return -1;
+	}*/
+
+	double funcaoAtivacao(double in){
+		return 1/(1-Math.exp(in));
+	}
+
+	double derivadaAtivacao(double in){
+		double fx=funcaoAtivacao(in);
+		return fx*(1-fx);
 	}
 
 	//--->		ATENÇÃO NOS PESOS	<---
@@ -85,12 +94,15 @@ class MLP{
 	
 	//Algoritmo de treinamento.
 	//não retorna nada, apenas modifica pesos da estrutura.
-	void treinamento(double[][]dados){
+	//esperado é uma matriz, pois as letras são representadas como arranjos (ex: A ={1,0,0,0,0,0,0})
+	//k:numero de dados;	
+	void treinamento(double[][]dados, double[][]esperado){
 		
 		//Os pesos devem ser inicializados fora do método (passo 0)
 				
-		int saida=0;
 		int epocas=0;
+		double[] delta= new double[dados.length];//termo de informação do erro
+		double[] delta2=new double[camadaEscondida.length];
 
 		while(epocas<2){//(passo 1)
 
@@ -112,7 +124,7 @@ class MLP{
 					}
 
 					//Aplica a função de ativação no neuronio atual da camada escondida
-					saida=funcaoAtivacao(camadaEscondida[i]);		
+					camadaEscondida[i]=funcaoAtivacao(camadaEscondida[i]);		
 				}
 				//para cada linha de pesos2 (entre a camada escondida e a saída)
 				for(int i=0; i<pesos2.length; i++){//(passo 5)
@@ -126,7 +138,51 @@ class MLP{
 					}
 
 					//Aplica a função de ativação no neuronio atual da camada escondida
-					saida=funcaoAtivacao(saidas[i]);
+					saidas[i]=funcaoAtivacao(saidas[i]);
+				}
+	
+				//(Passo 6)
+				//para cada saída calcula termo de informação do erro
+				for(int i=0; i<saidas.length;i++){
+					delta[i]=(saidas[i]-dados[k][i])*derivadaAtivacao(saidas[i]);
+				}
+				//correções
+				double[][] correcaoPesos2=new double[pesos2.length][pesos2[0].length];
+				double[] correcaoBias2=new double[bias2.length];
+				//calcula correção de erros
+				for(int i=0; i<correcaoPesos2.length; i++){
+					for(int j=0; j<correcaoPesos2[0].length; j++){
+						//correcaoPesos2[i][j]=alfa*delta[i]*pesos2[i][j];
+						correcaoPesos2[i][j]=alfa*delta[i]*camadaEscondida[j];
+					}
+				}
+				//calcula novo bias
+				for(int i=0; i<bias2.length; i++){
+					correcaoBias2[i]=alfa*delta[i];
+				}
+
+
+				//(Passo 7)
+				//deltas da camada escondida
+				double[] deltaIn= new double[camadaEscondida.length];
+		
+				for(int i=0; i<deltaIn.length;i++){
+					for(int j=0; i<pesos2.length;j++){
+						deltaIn[i]+=delta[j]*pesos2[i][j];
+					}	
+				}
+				
+				for(int i=0; i<camadaEscondida.length;i++){
+					delta2[i]=(deltaIn[i])*derivadaAtivacao(camadaEscondida[i]);
+				}
+
+				double[][] correcaoPesos1=new double[pesos1.length][pesos1[0].length];
+				double[] correcaoBias1=new double[bias1.length];
+
+				for(int i=0; i<correcaoPesos1.length; i++){
+					for(int j=0; j<correcaoPesos1[0].length; j++){
+						correcaoPesos2[i][j]=alfa*delta2[i]*entradas[j];
+					}
 				}
 			}
 			epocas++;
