@@ -27,12 +27,8 @@ public class MultilayerPerceptron {
 
 	
 	public void processarRede() {
-		int epoca = 0;
-		while (epoca < pe.getEpocas()) {
 			feedforwardStep();
-			backwardStep();
-			epoca++;
-		}
+			backwardStep();		
 	}
 	
 	public void feedforwardStep() {
