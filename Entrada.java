@@ -11,8 +11,11 @@ public class Entrada {
 	
 	private final String BIAS = "1,";
 	private List<ParametrosEntrada> listaPE = new LinkedList<ParametrosEntrada>();
+	private double[][] pesosCEn;
+	private double[][] pesosCEs;
+
 	public List<ParametrosEntrada> prepara(String path, int epocas, int neuroniosCamadaEscondida, double taxaAprendizado)  {
-		
+						
 		try {
 			String row;
 			String[] entrada;
@@ -29,8 +32,8 @@ public class Entrada {
 			    parametrosEntrada.setCamadaEntrada(entradaAsDouble);
 			    parametrosEntrada.setSaidaEsperada(ExpectedValue.getExpectedValue(entrada[entrada.length-1]));
 			    neuroniosCamadaEscondida = (int) (neuroniosCamadaEscondida == 0 ? Math.sqrt(entrada.length*ExpectedValue.getExpectedValue(entrada[entrada.length-1]).length) : neuroniosCamadaEscondida);
-			    parametrosEntrada.setPesosCEn(getMatrizPesos(neuroniosCamadaEscondida, entradaAsDouble.length));
-			    parametrosEntrada.setPesosCEs(getMatrizPesos(ExpectedValue.getExpectedValue(entrada[entrada.length-1]).length, neuroniosCamadaEscondida + 1));
+			    parametrosEntrada.setPesosCEn(pesosCEn == null ? getMatrizPesos(neuroniosCamadaEscondida, entradaAsDouble.length) : pesosCEn);
+			    parametrosEntrada.setPesosCEs(pesosCEs == null ? getMatrizPesos(ExpectedValue.getExpectedValue(entrada[entrada.length-1]).length, neuroniosCamadaEscondida + 1) : pesosCEs);
 			    parametrosEntrada.setEpocas(epocas);
 			    parametrosEntrada.setTaxaAprendizado(taxaAprendizado);
 			    listaPE.add(parametrosEntrada);
@@ -39,9 +42,9 @@ public class Entrada {
 		} catch (MissingExpectValueException e ) {
 			System.out.println(e.getMessage());
 		} catch (FileNotFoundException e) {
-			System.out.println("O arquivo "+path+" n�o existe.");
+			System.out.println("O arquivo "+path+" nao existe.");
 		} catch (IOException e) {
-			System.out.println("Erro na manipula��o do arquivo "+path);
+			System.out.println("Erro na manipulacao do arquivo "+path);
 		}
 		
 		return listaPE;		

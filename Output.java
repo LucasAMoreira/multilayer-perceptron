@@ -70,25 +70,30 @@ public class Output {
 			System.out.println("┌".concat("─".repeat(line.length()-2)).concat("┐"));
 
 			int aux = 0;
+			
+			
+			String space = format.equalsIgnoreCase("SN") ? "           " :  "         ";
+
 			while (aux < numeroColunas)  {
 				
 				System.out.print("│");
-	
-				for (int y = aux; y < aux+16 && y < numeroColunas; y++)
+			int y;	
+				for (y = aux; y < aux+16 && y < numeroColunas; y++)
 					System.out.print(spaceAuxI.concat(String.format("%02d",(y))).concat(spaceAuxF));			
-				
-				System.out.println(" │");
+				String sobra = space.repeat(aux+16 - y);
+				System.out.println(sobra+" │");
 				System.out.println(line);
-			
 			
 			for (int i = 0; i < matrizPesos.length; i++) {
 				System.out.print("││");
-				for (int y = aux; y < aux+16 && y < matrizPesos[i].length; y++) {
+				for ( y = aux; y < aux+16 && y < matrizPesos[i].length; y++) {
 					String sinal = matrizPesos[i][y] >= 0 ? " " : "";
 
 					System.out.print(sinal+String.format(formato, matrizPesos[i][y])+ " │");
+										
 				}
-				System.out.println("│");
+				sobra = space.repeat(aux+16 - y);
+				System.out.println(sobra+"│");
 			}
 			
 			System.out.println(line);
