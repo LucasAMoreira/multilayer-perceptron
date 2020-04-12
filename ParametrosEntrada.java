@@ -1,3 +1,4 @@
+import java.util.Arrays;
 
 public class ParametrosEntrada {
 	
@@ -8,6 +9,10 @@ public class ParametrosEntrada {
 	private double[][] pesosCEs;
 	private double taxaAprendizado;
 	private int epocas;
+	
+	//Utilizados para o arquivo de saida. 
+	private double[][] pesosCEnInicial;
+	private double[][] pesosCEsInicial;
 	
 	public String getValor() {
 		return valor;
@@ -32,12 +37,15 @@ public class ParametrosEntrada {
 	}
 	public void setPesosCEn(double[][] pesosCEn) {
 		this.pesosCEn = pesosCEn;
+		this.pesosCEnInicial = Arrays.stream(pesosCEn).map(double[]::clone).toArray(double[][]::new);
 	}
 	public double[][] getPesosCEs() {
 		return pesosCEs;
 	}
 	public void setPesosCEs(double[][] pesosCEs) {
 		this.pesosCEs = pesosCEs;
+		this.pesosCEsInicial = Arrays.stream(pesosCEs).map(double[]::clone).toArray(double[][]::new);
+
 	}
 	public double getTaxaAprendizado() {
 		return taxaAprendizado;
@@ -50,6 +58,12 @@ public class ParametrosEntrada {
 	}
 	public void setEpocas(int epocas) {
 		this.epocas = epocas;
+	}
+	public double[][] getPesosCEnInicial() {
+		return pesosCEnInicial;
+	}
+	public double[][] getPesosCEsInicial() {
+		return pesosCEsInicial;
 	}
 	
 	

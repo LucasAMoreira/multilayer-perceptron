@@ -14,28 +14,19 @@ public class MultilayerPerceptron {
 	public MultilayerPerceptron(ParametrosEntrada p) {
 		
 		this.saidaCEs = new double[p.getPesosCEn().length + 1];
-		
 		this.saidaCEs[0] = 1;
-		
 		this.saidaRede  = new double[p.getSaidaEsperada().length];
-		
 		this.informacaoErroCEs = new double[p.getPesosCEs()[0].length - 1];
-		
 		this.informacaoErroCS = new double[p.getSaidaEsperada().length];
-		
 		this.somaAuxX_V = new double[p.getPesosCEs()[0].length - 1];
-		
 		this.somaAuxZ_W = new double[p.getSaidaEsperada().length];
-		
 		this.termoCorrecaoCS  = new double[p.getPesosCEs().length][p.getPesosCEs()[0].length];
-		
 		this.termoCorrecaoCEs = new double[p.getPesosCEn().length][p.getPesosCEn()[0].length];
-		
 		this.pe = p;
 	}
 
 	
-	public void processamentoNeuronio() {
+	public void processarRede() {
 		int epoca = 0;
 		while (epoca < pe.getEpocas()) {
 			feedforwardStep();
@@ -58,10 +49,13 @@ public class MultilayerPerceptron {
 			somaAuxX_V[i] = valor;
 			saidaCEs[i+1] = funcaoAtivacaoSigmoide(valor);
 		}
+		
+		Output.printValores("z", saidaCEs);
+		
 	}
 	
 	public void calculoSaidaRede() {
-		saidaCEs[0] = 1;
+//		saidaCEs[0] = 1;
 		double valor=0;
 		for (int i = 0; i < pe.getPesosCEs().length; i++) {
 			for (int y = 0; y < pe.getPesosCEs()[i].length; y++) {
@@ -70,6 +64,8 @@ public class MultilayerPerceptron {
 			somaAuxZ_W[i] = valor;
 			saidaRede[i] = funcaoAtivacaoSigmoide(valor);
 		}		
+		Output.printValores("y", saidaRede);
+
 	}
 	
 	public void backwardStep() {
@@ -84,6 +80,8 @@ public class MultilayerPerceptron {
 		for (int i = 0; i < somaAuxZ_W.length; i++) {
 			informacaoErroCS[i] = (pe.getSaidaEsperada()[i] - saidaRede[i])*calculoDerivadaCamadaSaida(i);
 		}
+		
+		Output.printValores("i", informacaoErroCS);
 	}
 	
 	public double calculoDerivadaCamadaSaida(int indice) {
@@ -96,17 +94,26 @@ public class MultilayerPerceptron {
 				termoCorrecaoCS[i][j] = pe.getTaxaAprendizado()*informacaoErroCS[i]*saidaCEs[j];
 			}
 		}
+		
+		Output.printPesos(termoCorrecaoCS, "SN");
+		
 	}
+	
+	//TEM ALGUMA COISA ERRADA
 	
 	public void calculoInformacaoErroCamadaEscondida() {
 		double valor;
-		for (int i = 0; i < informacaoErroCS.length+1; i++) { 
+		for (int i = 0; i < pe.getPesosCEs()[0].length-1; i++) { 
 			valor = 0;
 			for (int y = 0; y < informacaoErroCS.length; y++) {
+				
 				valor = valor + (informacaoErroCS[y]*pe.getPesosCEs()[y][i+1]);
+				
 			}
 			informacaoErroCEs[i] = valor*calculoDerivadaCamadaEscondida(i);
 		}
+		Output.printValores("i", informacaoErroCEs);
+
 	}
 	
 	public double calculoDerivadaCamadaEscondida(int indice) {
@@ -120,11 +127,19 @@ public class MultilayerPerceptron {
 			}	
 		}
 		
+		System.out.println("> PESOS ATUALIZADOS DA CAMADA DE ENTRADA");
+		Output.printPesos(pe.getPesosCEn(), "i");
+
+		
 		for (int i = 0; i < pe.getPesosCEs().length; i++) {
 			for (int j = 0; j < pe.getPesosCEs()[i].length; j++) {
 				pe.getPesosCEs()[i][j] = pe.getPesosCEs()[i][j] + termoCorrecaoCS[i][j];
 			}	
 		}
+		
+		System.out.println("> PESOS ATUALIZADOS DA CAMADA ESCONDIDA");
+		Output.printPesos(pe.getPesosCEs(), "i");
+
 	}
 	
 	public void calculoTermoCorrecaoEscondida() {
@@ -133,6 +148,10 @@ public class MultilayerPerceptron {
 				termoCorrecaoCEs[i][j] = pe.getTaxaAprendizado()*informacaoErroCEs[i]*pe.getCamadaEntrada()[j];
 			}
 		}
+		
+		Output.printPesos(termoCorrecaoCEs, "SN");
+
+		
 	}
 	
 	public double funcaoAtivacaoSigmoide(double valor) {

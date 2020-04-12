@@ -21,7 +21,7 @@ public class MultilayerPerceptronTest {
 		pe.setTaxaAprendizado(0.5);
 		
 		MultilayerPerceptron testSubject = new MultilayerPerceptron(pe);
-		testSubject.processamentoNeuronio();
+		testSubject.processarRede();
 	}
 
 }

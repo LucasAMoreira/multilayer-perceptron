@@ -5,14 +5,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 public class Entrada {
 	
 	private final String BIAS = "1,";
-	
 	private List<ParametrosEntrada> listaPE = new LinkedList<ParametrosEntrada>();
-	
-	public List<ParametrosEntrada> prepara(String path, int epocas, int neuroniosCamadaEscondida)  {
+	public List<ParametrosEntrada> prepara(String path, int epocas, int neuroniosCamadaEscondida, double taxaAprendizado)  {
 		
 		try {
 			String row;
@@ -26,19 +25,15 @@ public class Entrada {
 			    entradaAsDouble = Arrays.stream(Arrays.copyOfRange(entrada, 0, entrada.length-1))
 	                    .mapToDouble(Double::parseDouble)
 	                    .toArray();
-			    
 			    parametrosEntrada.setValor(entrada[entrada.length-1]);
 			    parametrosEntrada.setCamadaEntrada(entradaAsDouble);
 			    parametrosEntrada.setSaidaEsperada(ExpectedValue.getExpectedValue(entrada[entrada.length-1]));
-			    
 			    neuroniosCamadaEscondida = (int) (neuroniosCamadaEscondida == 0 ? Math.sqrt(entrada.length*ExpectedValue.getExpectedValue(entrada[entrada.length-1]).length) : neuroniosCamadaEscondida);
-			    
-			    parametrosEntrada.setPesosCEn(Util.getWeightMatrix(neuroniosCamadaEscondida, entradaAsDouble.length));
-			    parametrosEntrada.setPesosCEs(Util.getWeightMatrix(ExpectedValue.getExpectedValue(entrada[entrada.length-1]).length, neuroniosCamadaEscondida + 1));
+			    parametrosEntrada.setPesosCEn(getMatrizPesos(neuroniosCamadaEscondida, entradaAsDouble.length));
+			    parametrosEntrada.setPesosCEs(getMatrizPesos(ExpectedValue.getExpectedValue(entrada[entrada.length-1]).length, neuroniosCamadaEscondida + 1));
 			    parametrosEntrada.setEpocas(epocas);
-			    
+			    parametrosEntrada.setTaxaAprendizado(taxaAprendizado);
 			    listaPE.add(parametrosEntrada);
-			    
 			}
 			arquivo.close();	
 		} catch (MissingExpectValueException e ) {
@@ -49,9 +44,18 @@ public class Entrada {
 			System.out.println("Erro na manipula��o do arquivo "+path);
 		}
 		
-		return listaPE;
-						
+		return listaPE;		
+	}
+	
+	private double[][] getMatrizPesos(int rows, int columns) {
 		
+		Random rd = new Random();
+		
+		double[][] weightMatrix = new double[rows][columns];
+		for (int i = 0; i < weightMatrix.length; i ++)
+			for (int y = 0; y < weightMatrix[i].length; y++)
+				weightMatrix[i][y] = rd.nextDouble();
+		return weightMatrix;
 	}
 	
 	
