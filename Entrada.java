@@ -11,8 +11,8 @@ public class Entrada {
 	
 	private final String BIAS = "1,";
 	private List<ParametrosEntrada> listaPE = new LinkedList<ParametrosEntrada>();
-	private double[][] pesosCEn;
-	private double[][] pesosCEs;
+	public static double[][] pesosCEn;
+	public static double[][] pesosCEs;
 
 	public List<ParametrosEntrada> prepara(String path, int epocas, int neuroniosCamadaEscondida, double taxaAprendizado)  {
 						

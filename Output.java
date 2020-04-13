@@ -1,31 +1,12 @@
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
 public class Output {
-	PrintStream  fileOut;
-	public void write(ParametrosEntrada pe) throws IOException  {
-	File f = new File("C://users//leoco//Desktop//saida.txt");
-	f.createNewFile();
-	fileOut = new PrintStream(f);
-	System.setOut(fileOut);
-	System.out.println(pe.getValor());
-	System.out.println("Pesos Iniciais Camada Entrada");
-	System.out.println();
-	
-	printPesos(pe.getPesosCEnInicial(), "n");
-	printPesos(pe.getPesosCEsInicial(), "n");
 
-	fileOut.close();
-		
-	}
-	
-	
 	public static void printPesos(double[][] matrizPesos, String format) {
 		
-		String formato = format.equals("SN") ? "%8.2E" : "%.4f";
+		String formato = format.equals("SN") ? "%8.3E" : "%.4f";
 		
 		String formatAux = format.equalsIgnoreCase("SN") ? "----------+" :  "--------+";
 		String spaceAuxI =  format.equalsIgnoreCase("SN") ? "     " :  "    ";
@@ -54,7 +35,7 @@ public class Output {
 					
 					String sinal = matrizPesos[i][y] >= 0 ? " " : "";
 					
-					System.out.print(sinal+String.format(formato, matrizPesos[i][y])+ " │");
+					System.out.print(sinal+String.format(formato, matrizPesos[i][y])+ (formato.equalsIgnoreCase("%8.3E") ? "│" : " |"));
 				}
 				System.out.println("│");
 			}
@@ -89,7 +70,7 @@ public class Output {
 				for ( y = aux; y < aux+16 && y < matrizPesos[i].length; y++) {
 					String sinal = matrizPesos[i][y] >= 0 ? " " : "";
 
-					System.out.print(sinal+String.format(formato, matrizPesos[i][y])+ " │");
+					System.out.print(sinal+String.format(formato, matrizPesos[i][y])+ (formato.equalsIgnoreCase("%8.3E") ? "│" : " |"));
 										
 				}
 				sobra = space.repeat(aux+16 - y);
@@ -111,12 +92,14 @@ public class Output {
 		
 	}
 	
-	public static void printValores(String representacao, double[] valores) {
+	public static void printValores(String unidade, double[] valores, String formato, int inicio) {
 		
-		int aux = 1;
+		String formatoValor = formato.equals("f") ? "%.4f" : "%8.2E";		
+		
+		int aux = inicio;
 		while (aux < valores.length) {
 			for (int i = aux; i < aux+4 && i < valores.length; i++) 
-				System.out.print(representacao+String.format("%02d", i)+" = "+String.format("%8.2E", valores[i])+"   ");
+				System.out.print(unidade+String.format("%02d", i)+" = "+(valores[i] > 0 ? " " : "")+ String.format(formatoValor, valores[i])+"   ");
 			aux = aux + 4;
 			System.out.println();
 			}

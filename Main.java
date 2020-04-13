@@ -1,4 +1,3 @@
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -7,27 +6,47 @@ public class Main{
 	public static void main(String[]args) throws IOException{
 		
 		Entrada entrada  = new Entrada();
-		List<ParametrosEntrada> lstPE = entrada.prepara("resources//caracteres-limpo.csv", 1, 0, 0.5);
+		
+		String modo = "";
+		
+		List<ParametrosEntrada> lstPE = entrada.prepara("resources//caracteres-ruido.csv", 10000, 0, 0.6);
 		
 		int nEpocas = 0;
+		
+		System.out.println("> VALORES INICIAIS DA CAMA DE ENTRADA\n");
+		Output.printPesos( lstPE.get(0).getPesosCEnInicial(), "");
+		System.out.println("> VALORES INICIAIS DA CAMA ESCONDIDA\n");
+		Output.printPesos( lstPE.get(0).getPesosCEsInicial(), "");
+		
+		
 		while (nEpocas < lstPE.get(0).getEpocas()) {
 			
 			for (ParametrosEntrada pe : lstPE) {
-				
-				System.out.println("\n > ENTRADA: "+pe.getValor()+"\n");
-				Output.printValores("x", pe.getCamadaEntrada());
-				System.out.println("> VALORES INICIAIS DA CAMA DE ENTRADA\n");
-				Output.printPesos( pe.getPesosCEnInicial(), "");
-				System.out.println("> VALORES INICIAIS DA CAMA ESCONDIDA\n");
-				Output.printPesos( pe.getPesosCEsInicial(), "");
 
-				MultilayerPerceptron mp = new MultilayerPerceptron(pe);
-				mp.processarRede();						
+				MultilayerPerceptron mp = new MultilayerPerceptron(pe, modo);
+				mp.processarRede();				
+				
+				if (modo.equalsIgnoreCase("AP") || nEpocas == lstPE.get(0).getEpocas()-1) {
+					System.out.println(" > ÉPOCA: "+(nEpocas+1)+"\n");
+					System.out.println(" > ENTRADA: "+pe.getValor()+"\n");
+					
+				}
+				
+				if (!modo.equalsIgnoreCase("AP") && nEpocas == lstPE.get(0).getEpocas()-1) {
+					System.out.println("> SAÍDA DA REDE\n");
+					Output.printValores("y", mp.getSaidaRede(), "f", 0);
+				}
+				
+				if (modo.equalsIgnoreCase("AP")) {
+					Output.printValores("x", pe.getCamadaEntrada(), "f", 0);
+				}
+				
+				
+				
+
 		}
 			nEpocas++;
 
-//			Output op = new Output();
-//			op.write(pe);
 		}
 		
 	}

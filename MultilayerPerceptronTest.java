@@ -20,7 +20,7 @@ public class MultilayerPerceptronTest {
 		pe.setSaidaEsperada(se);
 		pe.setTaxaAprendizado(0.5);
 		
-		MultilayerPerceptron testSubject = new MultilayerPerceptron(pe);
+		MultilayerPerceptron testSubject = new MultilayerPerceptron(pe, "");
 		testSubject.processarRede();
 	}
 
