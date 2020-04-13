@@ -13,9 +13,9 @@ public class MultilayerPerceptronTest {
 		 double[] se = {1,0};
 		 
 		ParametrosEntrada pe = new ParametrosEntrada();
-		pe.setCamadaEntrada(ce);
-		pe.setPesosCEn(pcen);
-		pe.setPesosCEs(pces);
+		pe.setEntradasDaRede(ce);
+		pe.setPesosCamadaEscondida(pcen);
+		pe.setPesosCamadaSaida(pces);
 		pe.setEpocas(1);
 		pe.setSaidaEsperada(se);
 		pe.setTaxaAprendizado(0.5);

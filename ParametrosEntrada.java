@@ -1,18 +1,13 @@
-import java.util.Arrays;
 
 public class ParametrosEntrada {
 	
 	private String valor;
-	private double[] camadaEntrada;
+	private double[] entradasDaRede;
 	private double[] saidaEsperada;
-	private double[][] pesosCEn;
-	private double[][] pesosCEs;
+	private double[][] pesosCamadaEscondida;
+	private double[][] pesosCamadaSaida;
 	private double taxaAprendizado;
 	private int epocas;
-	
-	//Utilizados para o arquivo de saida. 
-	private double[][] pesosCEnInicial;
-	private double[][] pesosCEsInicial;
 	
 	public String getValor() {
 		return valor;
@@ -20,11 +15,11 @@ public class ParametrosEntrada {
 	public void setValor(String valor) {
 		this.valor = valor;
 	}
-	public double[] getCamadaEntrada() {
-		return camadaEntrada;
+	public double[] getEntradasDaRede() {
+		return entradasDaRede;
 	}
-	public void setCamadaEntrada(double[] camadaEntrada) {
-		this.camadaEntrada = camadaEntrada;
+	public void setEntradasDaRede(double[] entradasDaRede) {
+		this.entradasDaRede = entradasDaRede;
 	}
 	public double[] getSaidaEsperada() {
 		return saidaEsperada;
@@ -32,19 +27,17 @@ public class ParametrosEntrada {
 	public void setSaidaEsperada(double[] saidaEsperada) {
 		this.saidaEsperada = saidaEsperada;
 	}
-	public double[][] getPesosCEn() {
-		return pesosCEn;
+	public double[][] getPesosCamadaEscondida() {
+		return pesosCamadaEscondida;
 	}
-	public void setPesosCEn(double[][] pesosCEn) {
-		this.pesosCEn = pesosCEn;
-		this.pesosCEnInicial = Arrays.stream(pesosCEn).map(double[]::clone).toArray(double[][]::new);
+	public void setPesosCamadaEscondida(double[][] pesosCamadaEscondida) {
+		this.pesosCamadaEscondida = pesosCamadaEscondida;
 	}
-	public double[][] getPesosCEs() {
-		return pesosCEs;
+	public double[][] getPesosCamadaSaida() {
+		return pesosCamadaSaida;
 	}
-	public void setPesosCEs(double[][] pesosCEs) {
-		this.pesosCEs = pesosCEs;
-		this.pesosCEsInicial = Arrays.stream(pesosCEs).map(double[]::clone).toArray(double[][]::new);
+	public void setPesosCamadaSaida(double[][] pesosCamadaSaida) {
+		this.pesosCamadaSaida = pesosCamadaSaida;
 
 	}
 	public double getTaxaAprendizado() {
@@ -59,14 +52,5 @@ public class ParametrosEntrada {
 	public void setEpocas(int epocas) {
 		this.epocas = epocas;
 	}
-	public double[][] getPesosCEnInicial() {
-		return pesosCEnInicial;
-	}
-	public double[][] getPesosCEsInicial() {
-		return pesosCEsInicial;
-	}
-	
-	
-	
-	
+
 }

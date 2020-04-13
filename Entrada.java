@@ -9,14 +9,24 @@ import java.util.Random;
 
 public class Entrada {
 	
-	private final String BIAS = "1,";
-	private List<ParametrosEntrada> listaPE;
-	public static double[][] pesosCEn;
-	public static double[][] pesosCEs;
-
+	private static final String BIAS = "1,";
+	
+	private List<ParametrosEntrada> lstParametrosEntrada;
+	
+	public double[][] pesosCamadaEscondida;
+	public double[][] pesosCamadaEntrada;
+	
+	
+	
+	/*
+	 * Lê o arquivo csv e realiza a criação de um objeto contendo os valores que serão utilizados no processamento o multilayer perceptron.
+	 * - O bias (1) é adicionado nas entradas da rede.
+	 * - Caso o número de neurônios na camada escondida seja 0, ele é definido a partir de média geométrica √ (quantidade de neurônios de entrada * quantidade neurônios de saída) 
+	 * 
+	 */
 	public List<ParametrosEntrada> prepara(String path, int epocas, int neuroniosCamadaEscondida, double taxaAprendizado)  {
 		
-		listaPE = new LinkedList<ParametrosEntrada>();
+		lstParametrosEntrada = new LinkedList<ParametrosEntrada>();
 		
 		try {
 			String row;
@@ -31,14 +41,14 @@ public class Entrada {
 	                    .mapToDouble(Double::parseDouble)
 	                    .toArray();
 			    parametrosEntrada.setValor(entrada[entrada.length-1]);
-			    parametrosEntrada.setCamadaEntrada(entradaAsDouble);
+			    parametrosEntrada.setEntradasDaRede(entradaAsDouble);
 			    parametrosEntrada.setSaidaEsperada(ExpectedValue.getExpectedValue(entrada[entrada.length-1]));
-			    neuroniosCamadaEscondida = (int) (neuroniosCamadaEscondida == 0 ? Math.sqrt(entrada.length*ExpectedValue.getExpectedValue(entrada[entrada.length-1]).length) : neuroniosCamadaEscondida);
-			    parametrosEntrada.setPesosCEn(pesosCEn == null ? getMatrizPesos(neuroniosCamadaEscondida, entradaAsDouble.length) : pesosCEn);
-			    parametrosEntrada.setPesosCEs(pesosCEs == null ? getMatrizPesos(ExpectedValue.getExpectedValue(entrada[entrada.length-1]).length, neuroniosCamadaEscondida + 1) : pesosCEs);
+			    neuroniosCamadaEscondida = (int) (neuroniosCamadaEscondida == 0 ? Math.sqrt((entrada.length - 1)*ExpectedValue.getExpectedValue(entrada[entrada.length-1]).length) : neuroniosCamadaEscondida);
+			    parametrosEntrada.setPesosCamadaEscondida(pesosCamadaEscondida == null ? getMatrizPesos(neuroniosCamadaEscondida, entradaAsDouble.length) : pesosCamadaEscondida);
+			    parametrosEntrada.setPesosCamadaSaida(pesosCamadaEntrada == null ? getMatrizPesos(ExpectedValue.getExpectedValue(entrada[entrada.length-1]).length, neuroniosCamadaEscondida + 1) : pesosCamadaEntrada);
 			    parametrosEntrada.setEpocas(epocas);
 			    parametrosEntrada.setTaxaAprendizado(taxaAprendizado);
-			    listaPE.add(parametrosEntrada);
+			    lstParametrosEntrada.add(parametrosEntrada);
 			}
 			arquivo.close();	
 		} catch (MissingExpectValueException e ) {
@@ -49,8 +59,12 @@ public class Entrada {
 			System.out.println("Erro na manipulacao do arquivo "+path);
 		}
 		
-		return listaPE;		
+		return lstParametrosEntrada;		
 	}
+	
+	/*
+	 * Cria uma matriz e preenche com valores aleatórios entre 0 e 1;
+	 */
 	
 	private double[][] getMatrizPesos(int rows, int columns) {
 		
