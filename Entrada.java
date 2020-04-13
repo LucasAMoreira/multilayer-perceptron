@@ -10,12 +10,14 @@ import java.util.Random;
 public class Entrada {
 	
 	private final String BIAS = "1,";
-	private List<ParametrosEntrada> listaPE = new LinkedList<ParametrosEntrada>();
+	private List<ParametrosEntrada> listaPE;
 	public static double[][] pesosCEn;
 	public static double[][] pesosCEs;
 
 	public List<ParametrosEntrada> prepara(String path, int epocas, int neuroniosCamadaEscondida, double taxaAprendizado)  {
-						
+		
+		listaPE = new LinkedList<ParametrosEntrada>();
+		
 		try {
 			String row;
 			String[] entrada;

@@ -10,9 +10,10 @@ public class MultilayerPerceptron {
 	private double[][] termoCorrecaoCEs;
 	
 	private ParametrosEntrada pe;
-	private String modo;
+	private Modo modo;
+	private static double erro;
 	
-	public MultilayerPerceptron(ParametrosEntrada p, String modo) {
+	public MultilayerPerceptron(ParametrosEntrada p, Modo modo) {
 		
 		this.saidaCEs = new double[p.getPesosCEn().length + 1];
 		this.saidaCEs[0] = 1;
@@ -34,8 +35,23 @@ public class MultilayerPerceptron {
 	}
 	
 	public void feedforwardStep() {
-		calculoSaidaCamadaEscondida();
-		calculoSaidaRede();
+		
+		if (modo == Modo.APRESENTACAO) {
+			
+			calculoSaidaCamadaEscondida();
+			Output.printValores("SAÍDA DA CAMADA ESCONDIDA", "z", saidaCEs, "sn", 1);
+			calculoSaidaRede();
+			Output.printValores("SAÍDA DA REDE", "y", saidaRede, "f", 0);
+			
+		} else {
+			
+			calculoSaidaCamadaEscondida();
+			calculoSaidaRede();
+			
+		}
+		
+
+
 	}
 	
 	public void calculoSaidaCamadaEscondida() {
@@ -47,12 +63,6 @@ public class MultilayerPerceptron {
 			somaAuxX_V[i] = valor;
 			saidaCEs[i+1] = funcaoAtivacaoSigmoide(valor);
 		}
-		
-		if (modo.equalsIgnoreCase("DEBUG")) {
-			System.out.println("> SAÍDA DA CAMADA ESCONDIDA\n");
-			Output.printValores("z", saidaCEs, "sn", 1);
-		}
-		
 	}
 	
 	public void calculoSaidaRede() {
@@ -65,28 +75,42 @@ public class MultilayerPerceptron {
 			somaAuxZ_W[i] = valor;
 			saidaRede[i] = funcaoAtivacaoSigmoide(valor);
 		}	
-		if (modo.equalsIgnoreCase("DEBUG")) {
-			System.out.println("> SAÍDA DA REDE\n");
-			Output.printValores("y", saidaRede, "f", 0);
-		}
 	}
 	
 	public void backwardStep() {
-		calculoInformacaoErroCamadaSaida();
-		calculoTermoCorrecaoSaida();
-		calculoInformacaoErroCamadaEscondida();
-		calculoTermoCorrecaoEscondida();
-		atualizarValores();
+		
+		if (modo == Modo.APRESENTACAO) {
+			
+			calculoInformacaoErroCamadaSaida();
+			Output.printValores("INFORMAÇÃO DE ERRO PARA OS NEURÔNIOS NA SAÍDA DA REDE", "i", informacaoErroCS, "ns", 0);
+			calculoTermoCorrecaoSaida();
+			Output.printPesos("TERMOS DE AJUSTE DOS PESOS ASSOCIADOS A CADA NEURÔNIO DA CAMADA DE SAÍDA", termoCorrecaoCS, "SN");
+			calculoInformacaoErroCamadaEscondida();
+			Output.printValores("INFORMAÇÃO DE ERRO PARA OS NEURÔNIOS DA CAMA ESCONDIDA", "i", informacaoErroCEs, "ns", 0);
+			calculoTermoCorrecaoEscondida();
+			Output.printPesos("TERMOS DE AJUSTE DOS PESOS ASSOCIADOS A CADA NEURÔNIO DA CAMADA ESCONDIDA", termoCorrecaoCEs, "SN");
+			atualizarValores();
+			Output.printPesos("NOVOS VALORES ATRIBUÍDOS AOS PESOS DA CAMADA ESCONDIDA", pe.getPesosCEn(), "i");
+			Output.printPesos("NOVOS VALORES ATRIBUÍDOS AOS PESOS DA CAMADA DE SAÍDA", pe.getPesosCEs(), "i");
+			
+		} else {
+			
+			calculoInformacaoErroCamadaSaida();
+			calculoTermoCorrecaoSaida();
+			calculoInformacaoErroCamadaEscondida();
+			calculoTermoCorrecaoEscondida();
+			atualizarValores();
+			
+		}
+
 	}
 	
 	public void calculoInformacaoErroCamadaSaida() {
+		double erroAux = 0;
 		for (int i = 0; i < somaAuxZ_W.length; i++) {
-			informacaoErroCS[i] = (pe.getSaidaEsperada()[i] - saidaRede[i])*calculoDerivadaCamadaSaida(i);
-		}
-		
-		if (modo.equalsIgnoreCase("DEBUG")) {
-			System.out.println("> INFORMAÇÃO DE ERRO PARA OS NEURÔNIOS NA SAÍDA DA REDE\n");
-			Output.printValores("i", informacaoErroCS, "ns", 0);
+			erroAux = (pe.getSaidaEsperada()[i] - saidaRede[i]);
+			erro = erro + (Math.pow(erroAux, 2));
+			informacaoErroCS[i] = erroAux*calculoDerivadaCamadaSaida(i);
 		}
 	}
 	
@@ -100,11 +124,6 @@ public class MultilayerPerceptron {
 				termoCorrecaoCS[i][j] = pe.getTaxaAprendizado()*informacaoErroCS[i]*saidaCEs[j];
 			}
 		}
-		if (modo.equalsIgnoreCase("DEBUG")) {
-			System.out.println("> TERMOS DE AJUSTE DOS PESOS ASSOCIADOS A CADA NEURÔNIO DA CAMADA DE SAÍDA\n");
-			Output.printPesos(termoCorrecaoCS, "SN");
-		}
-		
 	}
 		
 	public void calculoInformacaoErroCamadaEscondida() {
@@ -118,11 +137,6 @@ public class MultilayerPerceptron {
 			}
 			informacaoErroCEs[i] = valor*calculoDerivadaCamadaEscondida(i);
 		}
-		if (modo.equalsIgnoreCase("DEBUG")) {
-			System.out.println("> INFORMAÇÃO DE ERRO PARA OS NEURÔNIOS DA CAMA ESCONDIDA\n");
-			Output.printValores("i", informacaoErroCEs, "ns", 0);
-		}
-
 	}
 	
 	public void calculoTermoCorrecaoEscondida() {
@@ -131,12 +145,6 @@ public class MultilayerPerceptron {
 				termoCorrecaoCEs[i][j] = pe.getTaxaAprendizado()*informacaoErroCEs[i]*pe.getCamadaEntrada()[j];
 			}
 		}
-		if (modo.equalsIgnoreCase("DEBUG")) {
-			System.out.println("> TERMOS DE AJUSTE DOS PESOS ASSOCIADOS A CADA NEURÔNIO DA CAMADA ESCONDIDA\n");
-			Output.printPesos(termoCorrecaoCEs, "SN");
-		}
-
-		
 	}
 	
 	public double calculoDerivadaCamadaEscondida(int indice) {
@@ -149,22 +157,11 @@ public class MultilayerPerceptron {
 				pe.getPesosCEn()[i][j] = pe.getPesosCEn()[i][j] + termoCorrecaoCEs[i][j];
 			}	
 		}
-		if (modo.equalsIgnoreCase("DEBUG")) {
-			System.out.println("> NOVOS VALORES ATRIBUÍDOS AOS PESOS DA CAMADA ESCONDIDA\n");
-			Output.printPesos(pe.getPesosCEn(), "i");
-		}
-		
 		for (int i = 0; i < pe.getPesosCEs().length; i++) {
 			for (int j = 0; j < pe.getPesosCEs()[i].length; j++) {
 				pe.getPesosCEs()[i][j] = pe.getPesosCEs()[i][j] + termoCorrecaoCS[i][j];
 			}	
 		}
-		
-		if (modo.equalsIgnoreCase("DEBUG")) {
-			System.out.println("> NOVOS VALORES ATRIBUÍDOS AOS PESOS DA CAMADA DE SAÍDA\n");
-			Output.printPesos(pe.getPesosCEs(), "i");
-		}
-
 	}
 	
 	
@@ -176,6 +173,16 @@ public class MultilayerPerceptron {
 	public double[] getSaidaRede() {
 		return saidaRede;
 	}
+	
+	public double getErro() {
+		return erro;
+	}
+	
+	public void zeraErro() {
+		erro = 0;
+	}
+	
+	
 	
 	
 }

@@ -4,8 +4,8 @@ import java.io.PrintStream;
 
 public class Output {
 
-	public static void printPesos(double[][] matrizPesos, String format) {
-		
+	public static void printPesos(String frase, double[][] matrizPesos, String format) {
+		System.out.println("\n".concat(frase).concat(":").concat("\n"));
 		String formato = format.equals("SN") ? "%8.3E" : "%.4f";
 		
 		String formatAux = format.equalsIgnoreCase("SN") ? "----------+" :  "--------+";
@@ -92,15 +92,18 @@ public class Output {
 		
 	}
 	
-	public static void printValores(String unidade, double[] valores, String formato, int inicio) {
+	public static void printValores(String frase, String unidade, double[] valores, String formato, int inicio) {
 		
+		if (frase != null )
+			System.out.println("\n".concat(frase).concat(":").concat("\n"));
+
 		String formatoValor = formato.equals("f") ? "%.4f" : "%8.2E";		
 		
 		int aux = inicio;
 		while (aux < valores.length) {
-			for (int i = aux; i < aux+4 && i < valores.length; i++) 
+			for (int i = aux; i < aux+7 && i < valores.length; i++) 
 				System.out.print(unidade+String.format("%02d", i)+" = "+(valores[i] > 0 ? " " : "")+ String.format(formatoValor, valores[i])+"   ");
-			aux = aux + 4;
+			aux = aux + 7;
 			System.out.println();
 			}
 		System.out.println();
