@@ -19,15 +19,15 @@ public class EP{
 
 	public static void main(String[]args) throws Exception {
 		
-		ConjuntoDados cd = ConjuntoDados.OR;
+		ConjuntoDados cd = ConjuntoDados.CARACTERES;
 		
-		String caminhoArquivoTreinamento = "C://Projetos//IA//resources//problemOR.csv";
-		String caminhoArquivoTeste = "C://Projetos//IA//resources//problemOR.csv";
+		String caminhoArquivoTreinamento = "C://Projetos//IA//resources//caracteres-limpo.csv";
+		String caminhoArquivoTeste = "C://Projetos//IA//resources//caracteres-ruido.csv";
 		
 		leArquivo(caminhoArquivoTreinamento, cd);
 		
 		int neuroniosCE=(int)(Math.sqrt(cd.getNeuroniosEntrada()*cd.getNeuroniosSaida()));
-		MultilayerPerceptron rede = new MultilayerPerceptron(cd.getNeuroniosEntrada(),10,cd.getNeuroniosSaida());
+		MultilayerPerceptron rede = new MultilayerPerceptron(cd.getNeuroniosEntrada(),21,cd.getNeuroniosSaida());
 
 		
 		if (caminhoArquivoTreinamento.equalsIgnoreCase(caminhoArquivoTeste)) { 
@@ -67,7 +67,7 @@ public class EP{
 			}
 			
 			rede.treinamento(dadosTR,respostasTR);
-			rede.teste(dadosTE);
+			rede.teste(dadosTE, respostasTE);
 			
 		} else {
 			
@@ -75,7 +75,7 @@ public class EP{
 			
 			leArquivo(caminhoArquivoTeste, cd);
 			
-			rede.teste(dados);
+			rede.teste(dados, respostas);
 		}
 
 	}

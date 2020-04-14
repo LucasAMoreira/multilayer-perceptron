@@ -1,7 +1,7 @@
 
 public enum ConjuntoDados {
 	
-	AND(4, 2, 1, 63, 7), XOR(4, 2, 1, 2, 1), OR(4, 2, 1, 2, 1), CARACTERES(21, 63, 7, 2, 1);
+	AND(4, 2, 1, 63, 7), XOR(4, 2, 1, 2, 1), OR(4, 2, 1, 2, 1), CARACTERES(21, 63, 7, 63, 7);
 	
 	private int linhasDados;
 	private int colunasDados;
