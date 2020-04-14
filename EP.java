@@ -33,27 +33,8 @@ class MLP{
 		alfa=1;
 	}
 
-
-	//--->É necessário criar uma função de ativação para cada letra?<---
-
-	double funcaoAtivacao1(double in){
-		if(in>=0){
-			return 1;		
-		}
-		else
-			return -1;
-	}
-
-	/*double derivadaAtivacao(double in){
-		if(in>=0){
-			return 0;		
-		}
-		else
-			return 0;
-	}*/
-
 	double funcaoAtivacao(double in){
-		return 1/(1-Math.exp(in));
+		return 1/(1+Math.exp(-1*in));
 	}
 
 	double derivadaAtivacao(double in){
@@ -77,16 +58,53 @@ class MLP{
 	//matriz[0].length->numero de colunas
 	double[][] inicializaPesos(double[][] pesos){
 		Random r = new Random();
-		//DecimalFormat df = new DecimalFormat("#0.00000");
 		for(int i=0; i<pesos.length; i++){
 			for(int j=0; j<pesos[0].length; j++){
+				double sinal=r.nextDouble();
 				double atual=r.nextDouble();
-				//String aux=df.format(atual);
-				//aux = aux.replaceAll(",",".");
-				pesos[i][j]=Double.valueOf(atual);
-			}
+				if(sinal<=0.5){
+					atual=atual*-1;
+				}
+
+				if(atual>0.5 || atual<-0.5){
+					j--;
+				}else{
+					pesos[i][j]=atual;
+				}
+			}	
 		}
 		return pesos;
+	}
+
+	void inicializaBias(){
+		Random r = new Random();
+
+		for(int i=0; i<bias1.length; i++){
+			double sinal=r.nextDouble();
+			double atual=r.nextDouble();
+			if(sinal<=0.5){
+				atual=atual*-1;
+			}
+
+			if(atual>0.5 || atual<-0.5){
+				i--;
+			}else{
+				bias1[i]=atual;
+			}
+		}
+		for(int i=0; i<bias2.length; i++){
+			double sinal=r.nextDouble();
+			double atual=r.nextDouble();
+			if(sinal<=0.5){
+				atual=atual*-1;
+			}
+
+			if(atual>0.5 || atual<-0.5){
+				i--;
+			}else{
+				bias2[i]=atual;
+			}
+		}
 	}
 
 	/*
@@ -112,7 +130,7 @@ class MLP{
 	//k:numero de dados;	
 	void treinamento(double[][]dados, double[][]esperado){
 
-		//DecimalFormat df = new DecimalFormat("#0.0000");
+		DecimalFormat df = new DecimalFormat("#0.0000");
 
 		int epocas=0;
 		double[] delta= new double[saidas.length];//termo de informação do erro
@@ -126,17 +144,25 @@ class MLP{
 		pesos1=inicializaPesos(pesos1);
 		pesos2=inicializaPesos(pesos2);
 
-		//passo 1: executa passos 2-9 enquanto condição for verdadeira
-		while(epocas<10){
+		inicializaBias();
 
-			zIn= new double[camadaEscondida.length];
-			yIn= new double[saidas.length];
+		//passo 1: executa passos 2-9 enquanto condição for verdadeira
+		while(epocas<1000){
+
+			delta= new double[saidas.length];//termo de informação do erro
+			delta2=new double[camadaEscondida.length];
+			deltaIn= new double[camadaEscondida.length];
+
+
 
 			System.out.println("Epoca: "+epocas);
 
 			//passo 2: para cada dado, executa passos 3-8
 			for(int k=0; k<dados.length;k++){
 
+
+				zIn= new double[camadaEscondida.length];
+				yIn= new double[saidas.length];
 				//feedforward (passos 3-5)
 
 				//passo 3: neuronios de entrada recebem os dados
@@ -147,27 +173,37 @@ class MLP{
 
 					//Faz soma  para cada neuronio da camada escondida
 					for(int j=0; j<pesos1[i].length;j++){
-						zIn[i]+=bias1[i]+pesos1[i][j]*entradas[j];
-						//System.out.print(zIn[i]+" ");					
+						zIn[i]+=(pesos1[i][j]*entradas[j]);					
 					}
-					//System.out.println();
+					zIn[i]+=bias1[i];
 
 					//Aplica a função de ativação no neuronio atual da camada escondida
 					camadaEscondida[i]=funcaoAtivacao(zIn[i]);		
 				}
+
+				//---->TESTES<----
+				/*for(int i=0; i<camadaEscondida.length; i++){
+					System.out.print(zIn[i]+"-->("+camadaEscondida[i]+") ");
+				}	
+				System.out.println();*/
 
 				//passo 5: faz soma ponderada nos neuronios da camada de saída
 				for(int i=0; i<pesos2.length; i++){
 
 					//Faz soma para cada neuronio da camada escondida
 					for(int j=0; j<pesos2[i].length;j++){
-						yIn[i]+=bias2[i]+pesos2[i][j]*camadaEscondida[j];			
+						yIn[i]+=(pesos2[i][j]*camadaEscondida[j]);			
 					}
-
-
+					yIn[i]+=bias2[i];
 					//Aplica a função de ativação no neuronio atual da camada escondida
 					saidas[i]=funcaoAtivacao(yIn[i]);
 				}
+
+				/*//---->TESTES<----
+				for(int i=0; i<saidas.length; i++){
+					System.out.print(df.format(saidas[i])+" ");
+				}	
+				System.out.println();*/
 
 				//backpropagation (passos 6-7)
 
@@ -195,7 +231,7 @@ class MLP{
 				//passo 7: cada unidade da camada escondida soma os deltas vindos da camada de cima		
 				for(int i=0; i<deltaIn.length;i++){
 					for(int j=0; j<pesos2.length;j++){
-						deltaIn[i]=delta[j]*pesos2[j][i];
+						deltaIn[i]+=delta[j]*pesos2[j][i];
 					}	
 				}
 				
@@ -231,13 +267,34 @@ class MLP{
 					}	
 				}
 
+				for(int i=0; i<bias1.length; i++){
+					bias1[i]+=correcaoBias1[i];
+				}
+
+				for(int i=0; i<bias2.length; i++){
+					bias2[i]+=correcaoBias2[i];
+				}
+
+			
 				//---->TESTES<----
+				
 				for(int i=0; i<saidas.length; i++){
-					System.out.print(saidas[i]+" ");
+					System.out.print(df.format(saidas[i])+" ");
 				}	
 				System.out.println();
-
+				
 			}
+
+			if(epocas>2500){
+				alfa=0.7;
+			}
+			if(epocas>5000){
+				alfa=0.5;
+			}
+			if(epocas>7500){
+				alfa=0.25;
+			}
+			//alfa-=0.25*alfa;
 			epocas++;
 		}
 	}
@@ -306,6 +363,7 @@ public class EP{
 				numerico=paraNumerico(teste);
 				dados[i]=numerico;
 				i++;
+				//System.out.println(dados[i]+" ");
 			}
 
 			br.close();
@@ -321,9 +379,33 @@ public class EP{
 			System.out.println();
 		}*/
 
-		MLP rede = new MLP(63,14,7);
+		int a=(int)(Math.sqrt(63*7));
+		MLP rede = new MLP(63,a,7);
 
-		double respostas[][]={{1,0,0,0,0,0,0},
+		/*double respostas[][]={{1,-1,-1,-1,-1,-1,-1},
+		{-1,1,-1,-1,-1,-1,-1},
+		{-1,-1,1,-1,-1,-1,-1},
+		{-1,-1,-1,1,-1,-1,-1},
+		{-1,-1,-1,-1,1,-1,-1},
+		{-1,-1,-1,-1,-1,1,-1},
+		{-1,-1,-1,-1,-1,-1,1},
+		{1,-1,-1,-1,-1,-1,-1},
+		{-1,1,-1,-1,-1,-1,-1},
+		{-1,-1,1,-1,-1,-1,-1},
+		{-1,-1,-1,1,-1,-1,-1},
+		{-1,-1,-1,-1,1,-1,-1},
+		{-1,-1,-1,-1,-1,1,-1},
+		{-1,-1,-1,-1,-1,-1,1},
+		{1,-1,-1,-1,-1,-1,-1},
+		{-1,1,-1,-1,-1,-1,-1},
+		{-1,-1,1,-1,-1,-1,-1},
+		{-1,-1,-1,1,-1,-1,-1},
+		{-1,-1,-1,-1,1,-1,-1},
+		{-1,-1,-1,-1,-1,1,-1},
+		{-1,-1,-1,-1,-1,-1,1}};*/
+
+		double respostas[][]={
+		{1,0,0,0,0,0,0},
 		{0,1,0,0,0,0,0},
 		{0,0,1,0,0,0,0},
 		{0,0,0,1,0,0,0},
