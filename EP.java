@@ -2,6 +2,8 @@ import java.util.Random;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.text.DecimalFormat;
+
+//import Entradas.java;
 //Criar constante para representar numero de epocas?
 
 // MUDAR FUNÇÃO DE ATIVAÇÃO?
@@ -107,20 +109,45 @@ class MLP{
 		}
 	}
 
-	/*
+	
 	void teste(double[][]entrada){
 
-		for(int j=0; j<entrada.length; j++){
-			double resposta=0;
-			for(int i=0; i<pesos.length;i++){
-				resposta+=pesos[i]*entrada[j][i];
+		DecimalFormat df = new DecimalFormat("#0.0000");
+
+		for(int k=0; k<entrada.length;k++){
+			entradas=entrada[k];
+			//passo 4: faz soma ponderada nos neuronios da camada escondida
+			for(int i=0; i<pesos1.length; i++){
+
+				double[] zIn= new double[camadaEscondida.length];
+				//Faz soma  para cada neuronio da camada escondida
+				for(int j=0; j<pesos1[i].length;j++){
+					zIn[i]+=(pesos1[i][j]*entradas[j]);					
+				}
+				zIn[i]+=bias1[i];
+				//Aplica a função de ativação no neuronio atual da camada escondida
+				camadaEscondida[i]=funcaoAtivacao(zIn[i]);		
 			}
-			resposta+=bias;
-	
-			int solucao=funcaoAtivacao(resposta);
-			System.out.println(solucao);
+
+			//passo 5: faz soma ponderada nos neuronios da camada de saída
+			for(int i=0; i<pesos2.length; i++){
+
+				double[] yIn= new double[saidas.length];
+				//Faz soma para cada neuronio da camada escondida
+				for(int j=0; j<pesos2[i].length;j++){
+					yIn[i]+=(pesos2[i][j]*camadaEscondida[j]);			
+				}
+				yIn[i]+=bias2[i];
+				//Aplica a função de ativação no neuronio atual da camada escondida
+				saidas[i]=funcaoAtivacao(yIn[i]);
+			}
+				
+			for(int i=0; i<saidas.length; i++){
+				System.out.print(df.format(saidas[i])+" ");
+			}	
+			System.out.println();
 		}
-	}*/
+	}
 
 	
 	
@@ -147,15 +174,13 @@ class MLP{
 		inicializaBias();
 
 		//passo 1: executa passos 2-9 enquanto condição for verdadeira
-		while(epocas<1000){
+		while(epocas<10000){
 
 			delta= new double[saidas.length];//termo de informação do erro
 			delta2=new double[camadaEscondida.length];
 			deltaIn= new double[camadaEscondida.length];
 
-
-
-			System.out.println("Epoca: "+epocas);
+			//System.out.println("Epoca: "+epocas);
 
 			//passo 2: para cada dado, executa passos 3-8
 			for(int k=0; k<dados.length;k++){
@@ -181,12 +206,6 @@ class MLP{
 					camadaEscondida[i]=funcaoAtivacao(zIn[i]);		
 				}
 
-				//---->TESTES<----
-				/*for(int i=0; i<camadaEscondida.length; i++){
-					System.out.print(zIn[i]+"-->("+camadaEscondida[i]+") ");
-				}	
-				System.out.println();*/
-
 				//passo 5: faz soma ponderada nos neuronios da camada de saída
 				for(int i=0; i<pesos2.length; i++){
 
@@ -198,12 +217,6 @@ class MLP{
 					//Aplica a função de ativação no neuronio atual da camada escondida
 					saidas[i]=funcaoAtivacao(yIn[i]);
 				}
-
-				/*//---->TESTES<----
-				for(int i=0; i<saidas.length; i++){
-					System.out.print(df.format(saidas[i])+" ");
-				}	
-				System.out.println();*/
 
 				//backpropagation (passos 6-7)
 
@@ -275,13 +288,12 @@ class MLP{
 					bias2[i]+=correcaoBias2[i];
 				}
 
-			
-				//---->TESTES<----
+				/*//---->TESTES<----
 				
 				for(int i=0; i<saidas.length; i++){
 					System.out.print(df.format(saidas[i])+" ");
 				}	
-				System.out.println();
+				System.out.println();*/
 				
 			}
 
@@ -339,6 +351,7 @@ public class EP{
 	public static double[] paraNumerico(String[]s){
 		double[] resposta=new double[s.length];
 		for(int i=0; i<s.length;i++){
+			s[i] = s[i].replaceAll("[\"R$ ]", "");
 			resposta[i]=Double.valueOf(s[i].toString());
 		}
 		return resposta;
@@ -382,27 +395,7 @@ public class EP{
 		int a=(int)(Math.sqrt(63*7));
 		MLP rede = new MLP(63,a,7);
 
-		/*double respostas[][]={{1,-1,-1,-1,-1,-1,-1},
-		{-1,1,-1,-1,-1,-1,-1},
-		{-1,-1,1,-1,-1,-1,-1},
-		{-1,-1,-1,1,-1,-1,-1},
-		{-1,-1,-1,-1,1,-1,-1},
-		{-1,-1,-1,-1,-1,1,-1},
-		{-1,-1,-1,-1,-1,-1,1},
-		{1,-1,-1,-1,-1,-1,-1},
-		{-1,1,-1,-1,-1,-1,-1},
-		{-1,-1,1,-1,-1,-1,-1},
-		{-1,-1,-1,1,-1,-1,-1},
-		{-1,-1,-1,-1,1,-1,-1},
-		{-1,-1,-1,-1,-1,1,-1},
-		{-1,-1,-1,-1,-1,-1,1},
-		{1,-1,-1,-1,-1,-1,-1},
-		{-1,1,-1,-1,-1,-1,-1},
-		{-1,-1,1,-1,-1,-1,-1},
-		{-1,-1,-1,1,-1,-1,-1},
-		{-1,-1,-1,-1,1,-1,-1},
-		{-1,-1,-1,-1,-1,1,-1},
-		{-1,-1,-1,-1,-1,-1,1}};*/
+
 
 		double respostas[][]={
 		{1,0,0,0,0,0,0},
@@ -428,6 +421,33 @@ public class EP{
 		{0,0,0,0,0,0,1}};
 
 		rede.treinamento(dados,respostas);
+
+		System.out.println("Fim do treino");
+
+		try{
+			FileReader fr = new FileReader("entradas/caracteres-ruido.txt");
+			BufferedReader br = new BufferedReader(fr);
+
+			int i=0;
+
+			while(i<dados.length){
+				//System.out.println("a");
+				String linha = br.readLine().replaceAll("\\uFEFF","");
+				teste=divide(linha,dados[0].length);
+				numerico=paraNumerico(teste);
+				dados[i]=numerico;
+				i++;
+				//System.out.println(dados[i]+" ");
+			}
+
+			br.close();
+		}
+		catch(Exception e){
+			throw e;
+		}
+		
+
+		rede.teste(dados);
 
 	}
 	
