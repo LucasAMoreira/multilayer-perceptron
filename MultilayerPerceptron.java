@@ -275,9 +275,8 @@ public class MultilayerPerceptron {
 		for(int k=0; k<entrada.length;k++){
 			entradas=entrada[k];
 			//passo 4: faz soma ponderada nos neuronios da camada escondida
+			double[] zIn= new double[camadaEscondida.length];
 			for(int i=0; i<pesos1.length; i++){
-
-				double[] zIn= new double[camadaEscondida.length];
 				//Faz soma  para cada neuronio da camada escondida
 				for(int j=0; j<pesos1[i].length;j++){
 					zIn[i]+=(pesos1[i][j]*entradas[j]);					
@@ -288,9 +287,9 @@ public class MultilayerPerceptron {
 			}
 
 			//passo 5: faz soma ponderada nos neuronios da camada de saída
-			for(int i=0; i<pesos2.length; i++){
+			double[] yIn= new double[saidas.length];
 
-				double[] yIn= new double[saidas.length];
+			for(int i=0; i<pesos2.length; i++){
 				//Faz soma para cada neuronio da camada escondida
 				for(int j=0; j<pesos2[i].length;j++){
 					yIn[i]+=(pesos2[i][j]*camadaEscondida[j]);			
@@ -346,7 +345,7 @@ public class MultilayerPerceptron {
 		double erro_aux;
 		for(int i=0; i<saidas.length;i++){
 			erro_aux = esperado[k][i]-saidas[i];
-			erro = erro + erro_aux;
+			erro = erro + (Math.pow(erro_aux, 2));
 			delta[i]=erro_aux*derivadaAtivacao(yIn[i]);
 		}
 	}
