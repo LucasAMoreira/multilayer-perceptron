@@ -125,7 +125,7 @@ public class MultilayerPerceptron {
 	//k:numero de dados;	
 	void treinamento(double[][]dados, double[][]esperado){
 		
-		System.out.println("\n\n"+"-".repeat(150));
+		System.out.println("\n\n"+repeat("-",150));
 		DecimalFormat df = new DecimalFormat("#0.0000");
 
 		int epocas=0;
@@ -141,9 +141,11 @@ public class MultilayerPerceptron {
 		pesos2=inicializaPesos(pesos2);
 
 		inicializaBias();
-		
+
+		int max = 1000000;		
+
 		//passo 1: executa passos 2-9 enquanto condição for verdadeira
-		while(epocas<1000) {
+		while(epocas<max) {
 
 			delta= new double[saidas.length];//termo de informação do erro
 			delta2=new double[camadaEscondida.length];
@@ -151,9 +153,9 @@ public class MultilayerPerceptron {
 			
 			erro = 0;
 			
-			System.out.println("-".repeat(150));
+			//System.out.println(repeat("-",150));
 			
-			System.out.println("\nÉpoca: "+epocas);
+			//System.out.println("\nÉpoca: "+epocas);
 
 			//passo 2: para cada dado, executa passos 3-8
 			for(int k=0; k<dados.length;k++){
@@ -171,30 +173,18 @@ public class MultilayerPerceptron {
 
 				//passo 3: neuronios de entrada recebem os dados
 				envioDadosNeuronio(dados[k]);
-				
-				System.out.println("\nDados de Entrada: ");
-				
-				for(int i=0; i<dados[k].length; i++){
-					System.out.print(df.format(dados[k][i])+" ");
-				}
-				
+								
 				//passo 4: faz soma ponderada nos neuronios da camada escondida
 				calculoSaidaCamadaEscondida(zIn);
-				
-				System.out.println("\n\nSaída da Camada Escondida: ");
-				
-				for(int i=0; i<zIn.length; i++){
-					System.out.print(df.format(zIn[i])+" ");
-				}
-				
+								
 				//passo 5: faz soma ponderada nos neuronios da camada de saída
 				calculoSaidaCamadaSaida(yIn);
+				if(epocas==max-1){
+					System.out.println("\n\nSaída da Rede: ");
 				
-				System.out.println("\n\nSaída da Rede: ");
-
-				
-				for(int i=0; i<yIn.length; i++){
-					System.out.print(df.format(saidas[i])+" ");
+					for(int i=0; i<yIn.length; i++){
+						System.out.print(df.format(saidas[i])+" ");
+					}
 				}
 				
 				//backpropagation (passos 6-7)
@@ -202,72 +192,47 @@ public class MultilayerPerceptron {
 				//passo 6: calcula termo de informação do erro delta de cada unidade de saída
 				calculoInformacaoErroCamadaSaida(delta, esperado, k, yIn);
 				
-				System.out.println("\n\nInformação de Erro para os Neurônios na Saída da Rede: ");
-
-				for(int i=0; i<delta.length; i++){
-					System.out.print(df.format(delta[i])+" ");
-				}
-				
 				//calcula termo de correção dos erros
 				calculoTermoCorrecaoSaida(correcaoPesos2, correcaoBias2, delta);
-				
-				System.out.println("\n\nTermo de Correção Camada de Saída: ");
-
-				for(int i=0; i<correcaoPesos2.length; i++){
-					for(int j=0; j<correcaoPesos2[i].length; j++){
-						System.out.print(df.format(correcaoPesos2[i][j])+" ");
-					}
-				}
-				
-				//passo 7: cada unidade da camada escondida soma os deltas vindos da camada de cima		
+								
+				//passo7:cada unidade da camada escondida soma os deltas vindos da camada de cima		
 				calculoInformacaoErroCamadaEscondida(deltaIn, delta, pesos2, delta2, zIn);
 				
-				System.out.println("\n\nTermo de Correção Camada Escondida: ");
-
-				for(int i=0; i<deltaIn.length; i++){
-					System.out.print(df.format(deltaIn[i])+" ");
-				}
 				
 				//calcula termo de correção dos erros
 				calculoTermoCorrecaoCamadaEscondida(correcaoPesos1, correcaoBias1, delta2);
 				
-				System.out.println("\n\nInformação de Erro para os Neurônios na Saída da Rede: ");
-
-				for(int i=0; i<correcaoPesos1.length; i++){
-					for(int j=0; j<correcaoPesos1[i].length; j++){
-						System.out.print(df.format(correcaoPesos1[i][j])+" ");
-					}
-				}
-				
 
 				//passo 8: atualiza pesos e bias
 				atualizaValores(correcaoPesos1, correcaoPesos2, correcaoBias1, correcaoBias2);
-				
-				System.out.println("\n\nNovos Valores Atribuídos aos Pesos da Camada Escondida: ");
-
-				for(int i=0; i<pesos1.length; i++){
-					for (int j = 0; j < pesos1[i].length; j++) {
-						System.out.print(df.format(pesos1[i][j])+" ");
-					}
-				}
-				
-				System.out.println("\n\nNovos Valores Atribuídos aos Pesos da Camada de Saída: ");
-
-				
-				for(int i=0; i<pesos2.length; i++){
-					for (int j = 0; j < pesos2[i].length; j++) {
-						System.out.print(df.format(pesos2[i][j])+" ");
-					}
-				}
-								
+											
 			}
 			
-			System.out.println("\n\nErro da Época: "+(erro/2) / (dados.length));
+			//System.out.println("\n\nErro da Época: "+(erro/2) / (dados.length));
 
 			epocas++;
 		}
 	}
 	
+	public static double porcentagemAcertos(double[][] saidas, double[][] esperado){
+		
+		double acertos = saidas.length;	
+		
+		for(int i=0; i<saidas.length; i++){
+			for(int j=0; j<saidas[i].length; j++){
+				if(saidas[i][j]!=esperado[i][j]){
+					acertos--;
+					break;			
+				}				
+			}
+		}
+
+		double porcentagem = (acertos/saidas.length)*100;
+		
+		return porcentagem;
+	}
+
+
 	void teste(double[][]entrada, double[][] resposta){
 
 		DecimalFormat df = new DecimalFormat("#0.0000");
@@ -315,6 +280,14 @@ public class MultilayerPerceptron {
 			System.out.println();
 		}
 
+	}
+
+	public static String repeat​(String s, int count){
+		String resposta="";
+		for(int i=0; i<count; i++){
+			resposta=resposta+s;
+		}
+		return resposta;
 	}
 	
 	public void envioDadosNeuronio(double[] dados) {
@@ -411,10 +384,6 @@ public class MultilayerPerceptron {
 			bias2[i]+=correcaoBias2[i];
 		}
 	}
-	
-	
-	
-	
 	
 	
 
