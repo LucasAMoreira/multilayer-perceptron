@@ -1,7 +1,7 @@
 
 public enum ConjuntoDados {
 	
-	AND(4, 2, 1, 2, 1), XOR(4, 2, 1, 2, 1), OR(4, 2, 1, 2, 1), CARACTERES(21, 63, 7, 63, 7);
+	AND(4, 2, 1, 2, 1), XOR(4, 2, 1, 2, 1), OR(4, 2, 1, 2, 1), CARACTERES(21, 63, 7, 63, 7), RADAR(351,34,1,34,1);
 	
 	private int linhasDados;
 	private int colunasDados;
@@ -37,13 +37,5 @@ public enum ConjuntoDados {
 	public int getNeuroniosSaida() {
 		return neuroniosSaida;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		
 }
