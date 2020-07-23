@@ -18,39 +18,68 @@ public class EP{
 
 
 	public static void main(String[]args) throws Exception {
-
-		ConjuntoDados cd = ConjuntoDados.RADAR;
-
-		String caminho = "./entradas/ionosphere.data";
-
-		leArquivo(caminho, cd);	
-
-		//Numero neuronios na camada escondida (?)
-		int neuroniosCE = (int)(Math.sqrt(cd.getNeuroniosEntrada()*cd.getNeuroniosSaida()));
-
-		MultilayerPerceptron rede=new MultilayerPerceptron(cd.getNeuroniosEntrada(),neuroniosCE,cd.getNeuroniosSaida());	
-
-		holdout(dados,rede);
+		
+		ConjuntoDados cd = ConjuntoDados.CARACTERES;
+		
+		String caminhoArquivoTreinamento = "./entradas/caracteres-limpo.csv";
+		String caminhoArquivoTeste = "./entradas/caracteres-ruido.csv";
+		
+		leArquivo(caminhoArquivoTreinamento, cd);
+		
+		int neuroniosCE=(int)(Math.sqrt(cd.getNeuroniosEntrada()*cd.getNeuroniosSaida()));
+		MultilayerPerceptron rede = new MultilayerPerceptron(cd.getNeuroniosEntrada(),21,cd.getNeuroniosSaida());
 
 		
-	}
-
-
-	public static void holdout(double[][] dados, MultilayerPerceptron rede){
-
-		for(int i=0; i<30; i++){
-			sorteia(dados,respostas);
-
-			int fim = retornaFim(dados,0.7);
-
-			double[][] conjuntoTreino = corta(dados,0,fim);
-			double[][] respostasTreino = corta(respostas,0,fim);
-			double[][] conjuntoTeste = corta(dados,fim,dados.length);
-			double[][] respostasTeste = corta(respostas,fim,respostas.length);
-
-			rede.treinamento(conjuntoTreino,respostasTreino);
+		if (caminhoArquivoTreinamento.equalsIgnoreCase(caminhoArquivoTeste)) { 
+			
+			List<Integer> lst = new LinkedList<Integer>();
+			
+			Random random = new Random();
+			
+			int itensTreinamento = (int) (0.25 * dados.length);
+			
+			dadosTE = new double[itensTreinamento][dados[0].length];
+			respostasTE = new double[itensTreinamento][respostas[0].length];
+			
+			dadosTR = new double[dados.length - itensTreinamento][dados[0].length];
+			respostasTR = new double[respostas.length - itensTreinamento][respostas[0].length];
+			
+			for  (int i = 0; i < itensTreinamento; i++) { 
+				
+				lst.add(random.nextInt(dados.length));
+				
+			}
+			
+			int aux = 0;
+			int aux2 = 0;
+			for (int y = 0; y < dados.length; y++) {
+				
+				if (lst.contains(y)) {
+					dadosTE[aux] = dados[y];
+					respostasTE[aux] = respostas[y];
+					aux++;
+				} else {
+					dadosTR[aux2] = dados[y];
+					respostasTR[aux2] = respostas[y];
+					aux2++;
+				}
+			
+			}
+			
+			rede.treinamento(dadosTR,respostasTR);
+			rede.teste(dadosTE, respostasTE);
+			
+		} else {
+			
+			rede.treinamento(dados,respostas);
+			
+			leArquivo(caminhoArquivoTeste, cd);
+			
+			rede.teste(dados, respostas);
 		}
-	}	
+
+	}
+	
 	
 	private static void leArquivo(String caminho, ConjuntoDados cd) {
 		
@@ -77,51 +106,7 @@ public class EP{
 			}
 			arquivo.close();
 		} catch (Exception e) {
-			//System.out.println(e);
-			e.printStackTrace();
+			System.out.println(e);
 		}
-	}
-
-	public static  void sorteia (double[][] original,double[][] res){
-
-		Random aleatorio = new Random();
-
-		dados = new double[original.length][original[0].length];
-		respostas=new double[respostas.length][respostas[0].length];
-
-		int[] sorteados = new int[original.length];
-
-		for(int i=0; i<dados.length; i++){
-			int valor = aleatorio.nextInt(original.length);
-			
-			int situacao = sorteados[valor];
-			
-			if(situacao==1){
-				i--;
-			}
-			else{
-				sorteados[valor]=1;
-				dados[i]=original[valor];
-				respostas[i]=res[valor];
-			}
-		}
-	}
-
-	public static double[][] corta(double[][] original, int inicio, int fim){
-			
-		double[][] nova = new double[fim-inicio][original[0].length];
-
-		for(int i=0; i<fim-inicio; i++){
-			nova[i]=original[inicio+i];
-		}
-
-		return nova;
-	}
-
-	public static int retornaFim(double[][] matriz, double porcentagem){
-
-		int resposta = (int)(matriz.length*porcentagem);
-
-		return resposta;
 	}
 }
