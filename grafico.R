@@ -4,4 +4,4 @@ erros <-as.numeric(as.character(arquivo$erro));
 epocas <-as.numeric(as.character(arquivo$epoca));
 
 plot(epocas,erros);
-lines(lowess(epocas,erros));
+#lines(lowess(epocas,erros));
