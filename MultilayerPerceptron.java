@@ -112,20 +112,6 @@ public class MultilayerPerceptron {
 		}
 	}
 
-	/*
-	void teste(double[][]entrada){
-
-		for(int j=0; j<entrada.length; j++){
-			double resposta=0;
-			for(int i=0; i<pesos.length;i++){
-				resposta+=pesos[i]*entrada[j][i];
-			}
-			resposta+=bias;
-	
-			int solucao=funcaoAtivacao(resposta);
-			System.out.println(solucao);
-		}
-	}*/
 	
 	//Algoritmo de treinamento.
 	//não retorna nada, apenas modifica os pesos da estrutura.
@@ -149,7 +135,8 @@ public class MultilayerPerceptron {
 		pesos2=inicializaPesos(pesos2);
 
 		inicializaBias();
-		
+		escreveRotulos("epoca, erro","./saidas/erros.csv");
+
 		//passo 1: executa passos 2-9 enquanto condição for verdadeira
 		while(epocas<1000) {
 
@@ -282,6 +269,18 @@ public class MultilayerPerceptron {
 
 			epocas++;
 		}
+	}
+
+	public static void escreveRotulos(String rotulos, String nome)throws Exception{
+		File nf=new File(nome);
+		FileWriter fw=new FileWriter(nf);
+		try{
+			fw.write(rotulos+"\n");
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		fw.close();
 	}
 
 	public static void escreve(Integer epoca, Double valor, String nome)throws Exception{
