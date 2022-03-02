@@ -7,16 +7,16 @@ import java.text.DecimalFormat;
 
 public class MLP{
 
-	double[][] pesos1;//matriz de pesos da entrada para camada escondida
-	double[][] pesos2;//matriz de pesos da camada escondida para saída
-	double[] entradas;
-	double[] camadaEscondida;
-	double[] saidas;
+	private double[][] pesos1;//matriz de pesos da entrada para camada escondida
+	private double[][] pesos2;//matriz de pesos da camada escondida para saída
+	private double[] entradas;
+	private double[] camadaEscondida;
+	private double[] saidas;
 
-	double[] bias1;//arranjo de bias entre entrada e camada escondida
-	double[] bias2;//arranjo de bias entre camada escondida e saída
+	private double[] bias1;//arranjo de bias entre entrada e camada escondida
+	private double[] bias2;//arranjo de bias entre camada escondida e saída
 
-	double alfa;//taxa de aprendizado
+	private double alfa;//taxa de aprendizado
 
 	//i:número de elementos de entrada
 	//j:número de elementos da camada escondida
@@ -32,11 +32,13 @@ public class MLP{
 		alfa=1;
 	}
 
-	double funcaoAtivacao(double in){
+	// Função de ativação logistica
+	public double funcaoAtivacao(double in){
 		return 1/(1+Math.exp(-1*in));
 	}
 
-	double derivadaAtivacao(double in){
+	// Derivada da função de ativação
+	public double derivadaAtivacao(double in){
 		double fx=funcaoAtivacao(in);
 		return fx*(1-fx);
 	}
@@ -44,7 +46,7 @@ public class MLP{
 	//--->		ATENÇÃO NOS PESOS	<---
 	//Faz somatório {(pesoI*entradaI)+...+(pesoN*entradaN)}
 	//Recebe como parametros os pesos para determinado elemento e o bias para cada elemento
-	double entradaNeuronio(double[] pesos, double bias){
+	private double entradaNeuronio(double[] pesos, double bias){
 		double resposta=0;
 		for(int i=0; i<pesos.length;i++){
 			resposta+=pesos[i]*entradas[i];
@@ -55,7 +57,7 @@ public class MLP{
 	//Inicializa pesos
 	//matriz.length->numero de linhas
 	//matriz[0].length->numero de colunas
-	double[][] inicializaPesos(double[][] pesos){
+	private double[][] inicializaPesos(double[][] pesos){
 		Random r = new Random();
 		for(int i=0; i<pesos.length; i++){
 			for(int j=0; j<pesos[0].length; j++){
@@ -75,7 +77,7 @@ public class MLP{
 		return pesos;
 	}
 
-	void inicializaBias(){
+	private void inicializaBias(){
 		Random r = new Random();
 
 		for(int i=0; i<bias1.length; i++){
@@ -107,7 +109,7 @@ public class MLP{
 	}
 
 
-	void teste(double[][]entrada){
+	public void teste(double[][]entrada){
 
 		DecimalFormat df = new DecimalFormat("#0.0000");
 
@@ -152,7 +154,7 @@ public class MLP{
 	//não retorna nada, apenas modifica os pesos da estrutura.
 	//esperado é uma matriz, pois as letras são representadas como arranjos (ex: A ={1,0,0,0,0,0,0})
 	//k:numero de dados;
-	void treinamento(double[][]dados, double[][]esperado){
+	public void treinamento(double[][]dados, double[][]esperado){
 
 		DecimalFormat df = new DecimalFormat("#0.0000");
 
@@ -174,7 +176,7 @@ public class MLP{
 		while(epocas<10000){
 
 			delta= new double[saidas.length];//termo de informação do erro
-			delta2=new double[camadaEscondida.length];
+			delta2=new double[camadaEscondida.length];// Termo de informação do erro da camada escondida
 			deltaIn= new double[camadaEscondida.length];
 
 			//System.out.println("Epoca: "+epocas);
