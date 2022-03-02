@@ -13,7 +13,7 @@ Lista de arquivos:
 - Em MLP.java temos a classe com o multilayer perceptron;
 - Em EP.java podemos usar a classe MLP em sua aplicação original.
 
-A pasta **entradas** possuí os arquivos usados para treinamento e teste do trabalho.
+A pasta **entradas** possui os arquivos usados para treinamento e teste do trabalho.
 
 ## Uso
 Para testar o perceptron simples basta compilar e executar o arquivo **Main.java**:
